@@ -85,25 +85,28 @@ var server = net.createServer(function(socket) {
     });
 
     socket.on("data", function(data) {
+      try {
+        //var packet = JSON.parse(data);
         var packet = JSON.parse(data);
 
-        try {
+
+            var msg = packet.username + "/" + packet.latitude + "/" + packet.longitude;
             var message = new gcm.Message({
                 collapseKey: 'demo',
                 delayWhileIdle: true,
                 timeToLive: 3,
                 data: {
                     title: 'Someone need your help',
-                    message: packet.username,
-                    custom_key1: packet.latitude,
-                    custom_key2: packet.longitude
+                    message: msg
                 }
             });
+            socket.write('Echo server\n');
 
             sender.send(message, registrationIds, 4, function (err, result) {
                 console.log(result);
             });
-            console.log(data);
+            console.log(packet);
+
         } catch (e) {
             console.log("Else " + e.message);
         }
